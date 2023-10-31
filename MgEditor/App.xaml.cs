@@ -54,44 +54,6 @@ public partial class App : Application
             });
 
             services.AddSingleton<GameFactory>();
-            AddGameViewModel(services);
-            Add3dGameViewModel(services);
         });
-
-
-    static void AddGameViewModel(IServiceCollection services)
-    {
-        services.AddVez<GameViewModel>(x =>
-        {
-            x.AddTime();
-            x.AddInput<WpfInputService>();
-
-            x.Add<Batcher>();
-            x.Add<TestScene>();
-            x.Add<WorldService>();
-        });
-
-        services.AddDefaultEcs();
-    }
-
-    static void Add3dGameViewModel(IServiceCollection services)
-    {
-        services.AddVez<Simple3dViewModel>(x =>
-        {
-            x.AddTime();
-            x.AddInput<WpfInputService>();
-
-            x.Add<Simple3dScene>();
-        });
-
-        services.AddDefaultEcs();
-    }   
-
 }
 
-public class Simple3dViewModel : GameViewModel
-{
-    public Simple3dViewModel(IServiceProvider services) : base(services)
-    {
-    }
-}

@@ -51,19 +51,4 @@ namespace MgEditor
 
         }
     }
-
-    public class GameFactory
-    {
-        private readonly IServiceProvider _services;
-
-        public GameFactory(IServiceProvider services)
-        {
-            _services = services;
-        }
-
-        public IMonoGameViewModel Create<T>() where T : IMonoGameViewModel
-        {
-            return _services.CreateScope().ServiceProvider.GetRequiredService<T>();
-        }
-    }
 }

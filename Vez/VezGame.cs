@@ -30,4 +30,21 @@ namespace Vez
         
         protected override void Draw(GameTime gameTime) => _core?.Draw(gameTime);
     }
+
+
+    public class GameFactory
+    {
+        public TGame CreateGame<TGame, TConfiguration>(Action<CoreConfiguration, ServiceCollection> configuration) where TGame : class, IGame where TConfiguration : CoreConfiguration
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<TGame>();
+            services.AddSingleton<Core>();
+            var builder = new CoreConfiguration(services);
+            configuration(builder, services);
+
+            services.AddSingleton(isp => isp.GetRequiredService<TGame>().GraphicsDeviceService.GraphicsDevice);
+            var serviceProvider = services.BuildServiceProvider();
+            return serviceProvider.GetRequiredService<TGame>();
+        }
+    }
 }

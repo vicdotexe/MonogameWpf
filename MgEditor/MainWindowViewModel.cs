@@ -1,7 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Game.Shared.Scenes;
+using Game.Shared.Systems;
+
 using Monogame.Wpf;
+
+using Vez;
+using Vez.CoreServices.Inputs;
+using Vez.Ecs;
+using Vez.Graphics;
 
 namespace MgEditor;
 
@@ -16,8 +24,25 @@ public partial class MainWindowViewModel : ObservableObject
     
     public MainWindowViewModel(GameFactory factory)
     {
-        GameViewModel = factory.Create<GameViewModel>();
-        GameViewModel2 = factory.Create<Simple3dViewModel>();
+        GameViewModel = factory.CreateGame<GameViewModel>((core, services) =>
+        {
+            core.AddTime();
+            core.AddInput<WpfInputService>();
+
+            core.Add<Batcher>();
+            core.Add<TestScene>();
+            core.Add<WorldService>();
+
+            services.AddDefaultEcs();
+        });
+
+        GameViewModel2 = factory.CreateGame<GameViewModel>((core, services) =>
+        {
+            core.AddTime();
+            core.AddInput<WpfInputService>();
+
+            core.Add<Simple3dScene>();
+        });
     }
 
     //This is using the source generators from CommunityToolkit.Mvvm to generate a RelayCommand

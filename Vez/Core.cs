@@ -10,7 +10,7 @@ using Vez.Utils.Extensions;
 
 namespace Vez
 {
-    public class Core
+    internal sealed class Core
     {
         private readonly List<IUpdateService> _updateServices;
         private readonly List<IDrawService> _drawServices;
@@ -58,37 +58,11 @@ namespace Vez
         }
     }
 
-    public static class CoreRegistrations
-    {
-        /// <summary>
-        /// Adds your IGame implementation to the service collection, and builds the core services.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddVez<T>(this IServiceCollection services, Action<CoreBuilder> configuration) where T : class, IGame
-        {
-            return services
-                .AddScoped<T>()
-                .AddScoped(isp => isp.GetRequiredService<T>().GraphicsDeviceService.GraphicsDevice)
-                .AddCore(configuration);
-        }
-
-        private static IServiceCollection AddCore(this IServiceCollection services, Action<CoreBuilder> configuration)
-        {
-            var builder = new CoreBuilder(services);
-            configuration(builder);
-
-            return services.AddScoped<Core>();
-        }
-    }
-
-    public class CoreBuilder
+    public class CoreConfiguration
     {
         private IServiceCollection Services { get; }
 
-        public CoreBuilder(IServiceCollection services)
+        public CoreConfiguration(IServiceCollection services)
         {
             Services = services;
         }
@@ -97,7 +71,7 @@ namespace Vez
         /// Add the default Time class.
         /// </summary>
         /// <returns></returns>
-        public CoreBuilder AddTime()
+        public CoreConfiguration AddTime()
         {
             Add<Time>();
             return this;
@@ -107,13 +81,13 @@ namespace Vez
         /// Add default input state provider.
         /// </summary>
         /// <returns></returns>
-        public CoreBuilder AddInput()
+        public CoreConfiguration AddInput()
         {
             AddInput<InputStateProvider>();
             return this;
         }
 
-        public CoreBuilder AddInput<T>() where T : class, IInputStateProvider
+        public CoreConfiguration AddInput<T>() where T : class, IInputStateProvider
         {
             
             Add<IInputStateProvider, T>();
@@ -127,9 +101,9 @@ namespace Vez
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <returns></returns>
-        public CoreBuilder Add<TService>() where TService : class
+        public CoreConfiguration Add<TService>() where TService : class
         {
-            Services.AddScoped<TService>();
+            Services.AddSingleton<TService>();
 
             var serviceType = typeof(TService);
 
@@ -142,35 +116,18 @@ namespace Vez
 
             void AddServiceIfMatches<TInterface>(Type type) where TInterface : class
             {
-
                 if (typeof(TInterface).IsAssignableFrom(type))
                 {
-                    Services.AddScoped<TInterface>(x => (TInterface)x.GetRequiredService(type));
+                    Services.AddSingleton<TInterface>(x => (TInterface)x.GetRequiredService(type));
                 }
             }
         }
 
-        public CoreBuilder Add<TService, TImplementation>() where TService : class where TImplementation : class, TService
+        public CoreConfiguration Add<TService, TImplementation>() where TService : class where TImplementation : class, TService
         {
-            Services.AddScoped<TService, TImplementation>();
-
-            var serviceType = typeof(TImplementation);
-
-            AddServiceIfMatches<IUpdateService>(serviceType);
-            AddServiceIfMatches<IDrawService>(serviceType);
-            AddServiceIfMatches<IInitializeService>(serviceType);
-            AddServiceIfMatches<ILoadContentService>(serviceType);
-
+            Services.AddSingleton<TService, TImplementation>();
+            Add<TImplementation>();
             return this;
-
-            void AddServiceIfMatches<TInterface>(Type type) where TInterface : class
-            {
-
-                if (typeof(TInterface).IsAssignableFrom(type))
-                {
-                    Services.AddScoped<TInterface>(x => (TInterface)x.GetRequiredService(type));
-                }
-            }
         }
 
     }
