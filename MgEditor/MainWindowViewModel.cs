@@ -17,7 +17,7 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(GameFactory factory)
     {
         GameViewModel = factory.Create<GameViewModel>();
-        GameViewModel2 = factory.Create<GameViewModel>();
+        GameViewModel2 = factory.Create<Simple3dViewModel>();
     }
 
     //This is using the source generators from CommunityToolkit.Mvvm to generate a RelayCommand

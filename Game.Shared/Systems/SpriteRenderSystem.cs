@@ -34,7 +34,7 @@ namespace Game.Shared.Systems
                 var transform = entity.Get<Transform>();
                 var sprite = entity.Get<SpriteComponent>();
 
-                state.Draw(sprite.Texture, transform.Position - new Vector2(25), sprite.SourceRectangle, sprite.Color, transform.Rotation, sprite.Origin, transform.Scale, SpriteEffects.None, 0);
+                state.Draw(sprite.Sprite, transform.Position, sprite.SourceRectangle, sprite.Color, transform.Rotation, sprite.Sprite.Origin, transform.Scale, SpriteEffects.None, 0);
             }
 
             state.DrawLine(new(), _input.MousePosition, Color.Red);

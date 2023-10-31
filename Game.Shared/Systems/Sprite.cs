@@ -1,20 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Vez.Graphics.Textures;
+
 namespace Game.Shared.Systems
 {
     public class SpriteComponent
     {
-        public SpriteComponent(Texture2D texture)
+        public SpriteComponent(Sprite sprite)
         {
-            Texture = texture;
+            Sprite = sprite;
         }
 
-        public Texture2D Texture { get; set; }
-        public Vector2 Origin { get; set; }
+        public Sprite Sprite { get; set; }
         public Color Color { get; set; } = Color.White;
         public SpriteEffects SpriteEffects { get; set; }
-        public Rectangle? SourceRectangle { get; set; }
+        public Rectangle SourceRectangle { get; set; } = new Rectangle(0, 0, 1, 1);
 
     }
 

@@ -60,17 +60,11 @@ namespace Monogame.Wpf
                 if (_viewModel != null)
                 {
                     _viewModel.GraphicsDeviceService = _graphicsDeviceService;
-                    _graphicsDeviceService.DeviceCreated += _graphicsDeviceService_DeviceCreated;
                 }
                 
             };
             SizeChanged += (sender, args) => _viewModel?.SizeChanged(sender, args);
             
-        }
-
-        private void _graphicsDeviceService_DeviceCreated(object? sender, EventArgs e)
-        {
-            _viewModel?.Initialize(Mouse);
         }
 
         public GraphicsDevice GraphicsDevice => _graphicsDeviceService?.GraphicsDevice;

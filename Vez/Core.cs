@@ -17,10 +17,8 @@ namespace Vez
         private readonly List<IInitializeService> _initializeServices;
         private readonly List<ILoadContentService> _loadContentServices;
         
-        public Core(IServiceProvider provider, IGame game, GraphicsService graphicsService)
+        public Core(IServiceProvider provider)
         {
-            graphicsService.Initialize(game.GraphicsDeviceService);
-
             _updateServices = provider.GetServices<IUpdateService>().ToList();
             _drawServices = provider.GetServices<IDrawService>().ToList();
             _initializeServices = provider.GetServices<IInitializeService>().ToList();
@@ -60,17 +58,6 @@ namespace Vez
         }
     }
 
-    public class GraphicsService
-    {
-        public IGraphicsDeviceService GraphicsDeviceService { get; private set; }
-        public GraphicsDevice GraphicsDevice => GraphicsDeviceService.GraphicsDevice;
-
-        public void Initialize(IGraphicsDeviceService graphicsDeviceService)
-        {
-            GraphicsDeviceService = graphicsDeviceService;
-        }
-    }
-
     public static class CoreRegistrations
     {
         /// <summary>
@@ -84,9 +71,7 @@ namespace Vez
         {
             return services
                 .AddScoped<T>()
-                .AddScoped<IGame, T>(isp => isp.GetRequiredService<T>())
-                .AddScoped<GraphicsService>()
-                .AddScoped(x => x.GetRequiredService<GraphicsService>().GraphicsDevice)
+                .AddScoped(isp => isp.GetRequiredService<T>().GraphicsDeviceService.GraphicsDevice)
                 .AddCore(configuration);
         }
 
@@ -130,6 +115,7 @@ namespace Vez
 
         public CoreBuilder AddInput<T>() where T : class, IInputStateProvider
         {
+            
             Add<IInputStateProvider, T>();
             Add<Input>();
             return this;
@@ -168,7 +154,7 @@ namespace Vez
         {
             Services.AddScoped<TService, TImplementation>();
 
-            var serviceType = typeof(TService);
+            var serviceType = typeof(TImplementation);
 
             AddServiceIfMatches<IUpdateService>(serviceType);
             AddServiceIfMatches<IDrawService>(serviceType);

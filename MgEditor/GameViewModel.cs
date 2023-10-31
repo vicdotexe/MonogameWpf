@@ -16,7 +16,7 @@ namespace MgEditor
         private readonly IServiceProvider _services;
         WpfInputService? _inputService;
 
-        public GameViewModel(IServiceProvider services)
+        public GameViewModel(IServiceProvider services) : base()
         {
             _services = services;
             

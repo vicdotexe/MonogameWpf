@@ -14,7 +14,7 @@ host.Start();
 
 var scope = host.Services.CreateScope();
 
-using var game = scope.ServiceProvider.GetRequiredService<IGame>();
+using var game = scope.ServiceProvider.GetRequiredService<VezGame>();
 game.Run();
 
 static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -27,6 +27,21 @@ static IHostBuilder CreateHostBuilder(string[] args) =>
 
 
 
+//static void AddGame(IServiceCollection services)
+//{
+//    services.AddVez<VezGame>(x =>
+//    {
+//        x.AddTime();
+//        x.AddInput();
+
+//        x.Add<Batcher>();
+//        x.Add<TestScene>();
+//        x.Add<WorldService>();
+//    });
+
+//    services.AddDefaultEcs();
+//}
+
 static void AddGame(IServiceCollection services)
 {
     services.AddVez<VezGame>(x =>
@@ -34,9 +49,7 @@ static void AddGame(IServiceCollection services)
         x.AddTime();
         x.AddInput();
 
-        x.Add<Batcher>();
-        x.Add<TestScene>();
-        x.Add<WorldService>();
+        x.Add<Simple3dScene>();
     });
 
     services.AddDefaultEcs();

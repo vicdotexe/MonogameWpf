@@ -27,6 +27,11 @@ namespace Vez.Utils.Extensions
 
         private static Dictionary<GraphicsDevice, Sprite> _pixelTextures = new();
 
+        public static Sprite PixelTexture(this Batcher batcher)
+        {
+            return _pixelTexture(batcher);
+        }
+
 
         #region Line
 
