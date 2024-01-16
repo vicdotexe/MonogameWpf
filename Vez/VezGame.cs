@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
 using Vez.CoreServices;
+using Microsoft.Extensions.Configuration;
 
 namespace Vez
 {
@@ -34,7 +35,7 @@ namespace Vez
 
     public class GameFactory
     {
-        public TGame CreateGame<TGame, TConfiguration>(Action<CoreConfiguration, ServiceCollection> configuration) where TGame : class, IGame where TConfiguration : CoreConfiguration
+        public TGame CreateGame<TGame>(Action<CoreConfiguration, ServiceCollection> configuration) where TGame : class, IGame
         {
             var services = new ServiceCollection();
             services.AddSingleton<TGame>();
@@ -45,6 +46,12 @@ namespace Vez
             services.AddSingleton(isp => isp.GetRequiredService<TGame>().GraphicsDeviceService.GraphicsDevice);
             var serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetRequiredService<TGame>();
+        }
+
+        public TGame CreateGame<TGame,TConfig>(Action<CoreConfiguration, ServiceCollection>? configuration = null) where TGame : class, IGame where TConfig : GameConfiguration
+        {
+            TConfig gameConfig = (TConfig)Activator.CreateInstance(typeof(TConfig), configuration);
+            return gameConfig.CreateGame<TGame>();
         }
     }
 }

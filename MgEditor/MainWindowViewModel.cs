@@ -68,3 +68,4 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private IMonoGameViewModel? _gameViewModel2;
 }
+

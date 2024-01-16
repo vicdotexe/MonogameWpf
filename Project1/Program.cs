@@ -1,4 +1,5 @@
-﻿using Game.Shared.Scenes;
+﻿using Game.Shared;
+using Game.Shared.Scenes;
 using Game.Shared.Systems;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -16,15 +17,9 @@ var scope = host.Services.CreateScope();
 
 var factory = scope.ServiceProvider.GetRequiredService<GameFactory>();
 
-using var game = factory.CreateGame<VezGame>((core, services) =>
+using var game = factory.CreateGame<VezGame, SpritePlayground>((core, services) =>
 {
-    core.AddTime();
     core.AddInput();
-    
-    core.Add<Batcher>();
-    core.Add<TestScene>();
-    core.Add<WorldService>();
-    services.AddDefaultEcs();
 });
 
 game.Run();

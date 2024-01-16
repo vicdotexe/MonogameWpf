@@ -10,7 +10,7 @@ using Vez.Utils.Extensions;
 
 namespace Vez
 {
-    internal sealed class Core
+    public sealed class Core
     {
         private readonly List<IUpdateService> _updateServices;
         private readonly List<IDrawService> _drawServices;
@@ -58,6 +58,33 @@ namespace Vez
         }
     }
 
+    public abstract class GameConfiguration
+    {
+        private readonly Action<CoreConfiguration, ServiceCollection>? _config;
+
+        protected GameConfiguration(Action<CoreConfiguration, ServiceCollection> configuration)
+        {
+            _config = configuration;
+        }
+
+        protected abstract void Configure(CoreConfiguration configuration, IServiceCollection services);
+
+        public TGame CreateGame<TGame>() where TGame : class, IGame
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<TGame>();
+            services.AddSingleton(isp => isp.GetRequiredService<TGame>().GraphicsDeviceService.GraphicsDevice);
+            services.AddSingleton<Core>();
+
+            var builder = new CoreConfiguration(services);
+            Configure(builder, services);
+            _config?.Invoke(builder, services);
+
+            var serviceProvider = services.BuildServiceProvider();
+            return serviceProvider.GetRequiredService<TGame>();
+        }
+    }
+
     public class CoreConfiguration
     {
         private IServiceCollection Services { get; }
@@ -66,6 +93,7 @@ namespace Vez
         {
             Services = services;
         }
+
 
         /// <summary>
         /// Add the default Time class.
